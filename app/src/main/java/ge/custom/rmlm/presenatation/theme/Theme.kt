@@ -1,4 +1,4 @@
-package ge.custom.rmlm.ui.theme
+package ge.custom.rmlm.presenatation.theme
 
 import android.app.Activity
 import android.os.Build

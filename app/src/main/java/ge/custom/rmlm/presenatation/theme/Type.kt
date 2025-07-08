@@ -1,4 +1,4 @@
-package ge.custom.rmlm.ui.theme
+package ge.custom.rmlm.presenatation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
