@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RMLM</string>
+    <string name="navigation_title_record">Record</string>
+    <string name="navigation_title_recordings">Recordings</string>
 </resources>
