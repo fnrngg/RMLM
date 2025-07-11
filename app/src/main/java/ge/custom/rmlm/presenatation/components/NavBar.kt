@@ -19,11 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ge.custom.rmlm.R
 import ge.custom.rmlm.presenatation.screens.Route
+import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.Dimens.spacingM
-import ge.custom.rmlm.presenatation.theme.Dimens.spacingS
+import ge.custom.rmlm.presenatation.theme.Dimens.spacingXS
 
 
 @Preview
@@ -54,7 +54,7 @@ fun NavBar(onClick: (Route) -> Unit, items: List<NavItem>) {
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(1.dp)
+                .height(Dimens.borderSize)
         )
         Row(Modifier.fillMaxWidth()) {
             items.forEach { item ->
@@ -86,8 +86,8 @@ fun NavBarItem(
         modifier
             .clip(
                 if (isSelected) when (cornerLocation) {
-                    CornerLocation.TOP_END -> RoundedCornerShape(topEnd = spacingS)
-                    CornerLocation.TOP_START -> RoundedCornerShape(topStart = spacingS)
+                    CornerLocation.TOP_END -> RoundedCornerShape(topEnd = spacingXS)
+                    CornerLocation.TOP_START -> RoundedCornerShape(topStart = spacingXS)
                 } else RectangleShape
             )
             .background(
