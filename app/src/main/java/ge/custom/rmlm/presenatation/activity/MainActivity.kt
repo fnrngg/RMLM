@@ -77,7 +77,12 @@ fun MainScreen() {
                     RecordScreen()
                 }
                 composable<Route.Recordings> {
-                    RecordingsScreen()
+                    RecordingsScreen(
+                        modifier = Modifier,
+                        searchValue = "",
+                        recordings = emptyList(),
+                        onSearchValueChange = {}
+                    )
                 }
             }
         }
