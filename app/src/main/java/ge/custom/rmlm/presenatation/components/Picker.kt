@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import ge.custom.rmlm.R
 import ge.custom.rmlm.presenatation.screens.DurationChoice
@@ -100,12 +101,12 @@ fun PickerPreview() {
     RMLMTheme {
         Picker(
             Modifier,
-            isEnabled = true, isOpen = true, title = "Duration", items = listOf(
-                DurationChoice("5 Minutes", 5),
-                DurationChoice("10 Minutes", 10),
-                DurationChoice("20 Minutes", 20),
-                DurationChoice("30 Minutes", 30),
-                DurationChoice("60 Minutes", 60),
+            isEnabled = true, isOpen = true, title = stringResource(R.string.picker_title), items = listOf(
+                DurationChoice(stringResource(R.string.picker_choice_duration_5), 5),
+                DurationChoice(stringResource(R.string.picker_choice_duration_10), 10),
+                DurationChoice(stringResource(R.string.picker_choice_duration_20), 20),
+                DurationChoice(stringResource(R.string.picker_choice_duration_30), 30),
+                DurationChoice(stringResource(R.string.picker_choice_duration_60), 60),
             ), onPickerClick = { }, onChoiceClick = { choice -> }
         )
     }

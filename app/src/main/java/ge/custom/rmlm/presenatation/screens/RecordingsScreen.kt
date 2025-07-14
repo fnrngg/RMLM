@@ -12,7 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import ge.custom.rmlm.R
 import ge.custom.rmlm.presenatation.components.Search
 import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.RMLMTheme
@@ -31,7 +33,7 @@ fun RecordingsScreen(
     ) {
         Search(
             modifier = Modifier.padding(Dimens.spacingM),
-            hint = "Search",
+            hint = stringResource(R.string.recordings_search_hint),
             text = searchValue
         ) { newSearchValue ->
             onSearchValueChange(newSearchValue)

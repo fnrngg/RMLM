@@ -12,4 +12,5 @@
     <string name="record_welcome_app_name">Record My Last Minutes</string>
     <string name="record_description">Please choose duration and start recording in advance</string>
     <string name="record_start_recording">Start Recording</string>
+    <string name="recordings_search_hint">Search</string>
 </resources>

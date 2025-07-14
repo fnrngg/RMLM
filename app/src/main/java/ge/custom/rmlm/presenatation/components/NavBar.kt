@@ -25,29 +25,6 @@ import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.Dimens.spacingM
 import ge.custom.rmlm.presenatation.theme.Dimens.spacingXS
 
-
-@Preview
-@Composable
-fun NavBarPreview() {
-    NavBar(
-        {},
-        listOf(
-            NavItem(
-                stringResource(R.string.navigation_title_record),
-                true,
-                CornerLocation.TOP_END,
-                Route.Record
-            ),
-            NavItem(
-                stringResource(R.string.navigation_title_recordings),
-                false,
-                CornerLocation.TOP_START,
-                Route.Recordings
-            )
-        )
-    )
-}
-
 @Composable
 fun NavBar(onClick: (Route) -> Unit, items: List<NavItem>) {
     Column {
@@ -116,3 +93,26 @@ data class NavItem(
     val cornerLocation: CornerLocation,
     val route: Route
 )
+
+
+@Preview
+@Composable
+fun NavBarPreview() {
+    NavBar(
+        {},
+        listOf(
+            NavItem(
+                stringResource(R.string.navigation_title_record),
+                true,
+                CornerLocation.TOP_END,
+                Route.Record
+            ),
+            NavItem(
+                stringResource(R.string.navigation_title_recordings),
+                false,
+                CornerLocation.TOP_START,
+                Route.Recordings
+            )
+        )
+    )
+}
