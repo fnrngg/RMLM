@@ -1,29 +1,54 @@
 package ge.custom.rmlm.presenatation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ge.custom.rmlm.R
+import ge.custom.rmlm.common.Result
 import ge.custom.rmlm.presenatation.components.Search
 import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.RMLMTheme
+import ge.custom.rmlm.presenatation.viewmodels.RecordingsViewModel
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun RecordingsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: RecordingsViewModel = koinViewModel()
+) {
+    val recordingsUiState by viewModel.recordingsUiState.collectAsStateWithLifecycle()
+
+    RecordingsScreen(
+        modifier = modifier,
+        searchValue = recordingsUiState.search,
+        recordings = recordingsUiState.recordings
+    ) {
+        viewModel.search(it)
+    }
+}
 
 @Composable
 fun RecordingsScreen(
     modifier: Modifier,
     searchValue: String,
-    recordings: List<String>,
+    recordings: Result<List<String>>,
     onSearchValueChange: (String) -> Unit
 ) {
     Column(
@@ -39,27 +64,59 @@ fun RecordingsScreen(
             onSearchValueChange(newSearchValue)
         }
 
-        LazyColumn {
-            items(recordings.size) { index ->
+        when (recordings) {
+            is Result.Error -> ErrorScreen(Modifier.fillMaxSize())
+            Result.Loading -> LoadingScreen(Modifier.fillMaxSize())
+            is Result.Success -> {
+                LazyColumn {
+                    items(recordings.data.size) { index ->
 
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+fun LoadingScreen(modifier: Modifier = Modifier) {
+    Box(modifier) {
+        CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center),
+            color = MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    }
+}
+
+@Composable
+fun ErrorScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            modifier = Modifier.size(Dimens.iconSize91),
+            tint = MaterialTheme.colorScheme.error,
+            painter = painterResource(R.drawable.ic_error),
+            contentDescription = null
+        )
+        Text(
+            text = stringResource(R.string.recordings_error_message),
+            color = MaterialTheme.colorScheme.error
+        )
     }
 }
 
 @PreviewLightDark
 @Composable
 fun RecordingsScreenPreview() {
-    RMLMTheme {
-        var searchValue by remember {
-            mutableStateOf("")
-        }
-        RecordingsScreen(
-            Modifier,
-            searchValue,
-            emptyList()
-        ) {
-            searchValue = it
+    KoinScreenPreview {
+        RMLMTheme {
+            RecordingsScreen(
+                Modifier
+            )
         }
     }
 }

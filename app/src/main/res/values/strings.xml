@@ -11,6 +11,13 @@
     <string name="record_welcome_to">Welcome to</string>
     <string name="record_welcome_app_name">Record My Last Minutes</string>
     <string name="record_description">Please choose duration and start recording in advance</string>
+    <string name="record_started_description">You are recording your last 5 minutes If you want to change duration, please Save &amp; Stop or Stop recording</string>
+    <string name="record_started_description_positive">Save &amp; Stop</string>
+    <string name="record_started_description_negative">Stop</string>
     <string name="record_start_recording">Start Recording</string>
+    <string name="record_save_and_stop_recording">Save &amp; Stop</string>
+    <string name="record_save_and_restart_recording">Save &amp; Restart</string>
+    <string name="record_stop_recording">Stop Recording</string>
     <string name="recordings_search_hint">Search</string>
+    <string name="recordings_error_message">Please Enable Storage Permission</string>
 </resources>

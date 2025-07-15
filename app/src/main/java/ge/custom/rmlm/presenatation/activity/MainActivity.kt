@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ge.custom.rmlm.presenatation.components.NavBar
 import ge.custom.rmlm.presenatation.components.NavItem
+import ge.custom.rmlm.presenatation.screens.KoinScreenPreview
 import ge.custom.rmlm.presenatation.screens.RecordScreen
 import ge.custom.rmlm.presenatation.screens.RecordingsScreen
 import ge.custom.rmlm.presenatation.screens.Route
@@ -36,7 +37,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@PreviewLightDark
 @Composable
 fun MainScreen() {
     RMLMTheme {
@@ -78,10 +78,7 @@ fun MainScreen() {
                 }
                 composable<Route.Recordings> {
                     RecordingsScreen(
-                        modifier = Modifier,
-                        searchValue = "",
-                        recordings = emptyList(),
-                        onSearchValueChange = {}
+                        modifier = Modifier
                     )
                 }
             }
@@ -90,5 +87,12 @@ fun MainScreen() {
 }
 
 
+@PreviewLightDark
+@Composable
+fun MainScreenPreview() {
+    KoinScreenPreview {
+        MainScreen()
+    }
+}
 
 

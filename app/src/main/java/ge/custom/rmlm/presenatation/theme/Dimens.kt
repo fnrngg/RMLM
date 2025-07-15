@@ -12,6 +12,8 @@ object Dimens {
     val spacing3XL = 48.dp
     val spacing4XL = 64.dp
 
-    val iconSize = 16.dp
+    val iconSize16 = 16.dp
+    val iconSize91 = 91.dp
+
     val borderSize = 1.dp
 }

@@ -1,7 +1,7 @@
 package ge.custom.rmlm.common
 
 
-sealed class Result<T> {
+sealed class Result<out T> {
     data class Success<T>(
         val data: T
     ) : Result<T>()

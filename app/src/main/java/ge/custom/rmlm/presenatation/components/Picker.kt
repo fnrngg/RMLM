@@ -13,6 +13,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,12 +30,14 @@ import ge.custom.rmlm.presenatation.theme.RMLMTheme
 fun <T : Choice> Picker(
     modifier: Modifier = Modifier,
     isEnabled: Boolean,
-    isOpen: Boolean,
     title: String,
     items: List<T>,
-    onPickerClick: () -> Unit,
     onChoiceClick: (T) -> Unit
 ) {
+    var isOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     val pickerShape = RoundedCornerShape(
         Dimens.spacingXS
     )
@@ -53,7 +59,7 @@ fun <T : Choice> Picker(
                 .padding(vertical = Dimens.spacingS, horizontal = Dimens.spacingM)
                 .then(
                     if (isEnabled)
-                        Modifier.clickable(onClick = { onPickerClick })
+                        Modifier.clickable(onClick = { isOpen = !isOpen })
                     else Modifier
                 )
         ) {
@@ -71,7 +77,7 @@ fun <T : Choice> Picker(
                 ),
                 tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = null,
-                modifier = Modifier.size(Dimens.iconSize)
+                modifier = Modifier.size(Dimens.iconSize16)
             )
         }
 
@@ -101,13 +107,15 @@ fun PickerPreview() {
     RMLMTheme {
         Picker(
             Modifier,
-            isEnabled = true, isOpen = true, title = stringResource(R.string.picker_title), items = listOf(
+            isEnabled = true,
+            title = stringResource(R.string.picker_title),
+            items = listOf(
                 DurationChoice(stringResource(R.string.picker_choice_duration_5), 5),
                 DurationChoice(stringResource(R.string.picker_choice_duration_10), 10),
                 DurationChoice(stringResource(R.string.picker_choice_duration_20), 20),
                 DurationChoice(stringResource(R.string.picker_choice_duration_30), 30),
                 DurationChoice(stringResource(R.string.picker_choice_duration_60), 60),
-            ), onPickerClick = { }, onChoiceClick = { choice -> }
+            ), onChoiceClick = { choice -> }
         )
     }
 }
