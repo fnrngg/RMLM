@@ -3,11 +3,7 @@
     <string name="navigation_title_record">Record</string>
     <string name="navigation_title_recordings">Recordings</string>
     <string name="picker_title">Duration</string>
-    <string name="picker_choice_duration_5">5 Minutes</string>
-    <string name="picker_choice_duration_10">10 Minutes</string>
-    <string name="picker_choice_duration_20">20 Minutes</string>
-    <string name="picker_choice_duration_30">30 Minutes</string>
-    <string name="picker_choice_duration_60">60 Minutes</string>
+    <string name="picker_choice_duration">%d Minutes</string>
     <string name="record_welcome_to">Welcome to</string>
     <string name="record_welcome_app_name">Record My Last Minutes</string>
     <string name="record_description">Please choose duration and start recording in advance</string>
@@ -20,4 +16,14 @@
     <string name="record_stop_recording">Stop Recording</string>
     <string name="recordings_search_hint">Search</string>
     <string name="recordings_error_message">Please Enable Storage Permission</string>
+    <string name="record_audio_permission_description">Please grant audio recording permission, otherwise you will not be able to record your voice</string>
+    <string name="record_audio_permission_close">Close</string>
+    <string name="record_audio_permission_grant">Grant</string>
+    <string name="notification_save_and_restart">Save &amp; restart</string>
+    <string name="notification_stop_recording">Stop</string>
+    <string name="notification_save_recording">Save</string>
+    <string name="record_notification_permission_description">Without notification permission application will not be able to show recording state in status bar</string>
+    <string name="record_notification_permission_grant">Grant</string>
+    <string name="record_notification_permission_close">Close</string>
+    <string name="notification_name_recording_management">Recording Management</string>
 </resources>

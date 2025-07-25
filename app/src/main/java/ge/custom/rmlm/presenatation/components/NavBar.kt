@@ -51,7 +51,7 @@ fun NavBar(onClick: (Route) -> Unit, items: List<NavItem>) {
 }
 
 @Composable
-fun NavBarItem(
+private fun NavBarItem(
     modifier: Modifier,
     onClick: (Route) -> Unit,
     title: String,
@@ -97,7 +97,7 @@ data class NavItem(
 
 @Preview
 @Composable
-fun NavBarPreview() {
+private fun NavBarPreview() {
     NavBar(
         {},
         listOf(

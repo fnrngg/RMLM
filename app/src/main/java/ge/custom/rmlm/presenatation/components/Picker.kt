@@ -17,11 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import ge.custom.rmlm.R
+import ge.custom.rmlm.presenatation.recorder.RecorderDuration
 import ge.custom.rmlm.presenatation.screens.DurationChoice
 import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.RMLMTheme
@@ -77,20 +79,29 @@ fun <T : Choice> Picker(
                 ),
                 tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = null,
-                modifier = Modifier.size(Dimens.iconSize16)
+                modifier = Modifier
+                    .size(Dimens.iconSize16)
+                    .align(Alignment.CenterVertically)
             )
         }
 
         if (isOpen) {
             items.forEach { choice ->
-                HorizontalDivider()
-                Text(
-                    text = choice.title,
+                Column(
                     modifier = Modifier
-                        .padding(vertical = Dimens.spacingS, horizontal = Dimens.spacingM)
-                        .clickable(onClick = { onChoiceClick(choice) }),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                        .clickable(onClick = {
+                            isOpen = false
+                            onChoiceClick(choice)
+                        })
+                ) {
+                    HorizontalDivider()
+                    Text(
+                        text = choice.title,
+                        modifier = Modifier
+                            .padding(vertical = Dimens.spacingS, horizontal = Dimens.spacingM),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
     }
@@ -103,19 +114,22 @@ abstract class Choice(
 
 @PreviewLightDark
 @Composable
-fun PickerPreview() {
+private fun PickerPreview() {
     RMLMTheme {
         Picker(
             Modifier,
             isEnabled = true,
             title = stringResource(R.string.picker_title),
-            items = listOf(
-                DurationChoice(stringResource(R.string.picker_choice_duration_5), 5),
-                DurationChoice(stringResource(R.string.picker_choice_duration_10), 10),
-                DurationChoice(stringResource(R.string.picker_choice_duration_20), 20),
-                DurationChoice(stringResource(R.string.picker_choice_duration_30), 30),
-                DurationChoice(stringResource(R.string.picker_choice_duration_60), 60),
-            ), onChoiceClick = { choice -> }
+            items = RecorderDuration.entries.map { duration ->
+                DurationChoice(
+                    stringResource(
+                        R.string.picker_choice_duration,
+                        duration.duration
+                    ),
+                    duration
+                )
+            },
+            onChoiceClick = { choice -> }
         )
     }
 }

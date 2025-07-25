@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -54,6 +55,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -67,4 +69,5 @@ dependencies {
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.koin.compose.viewmodel.navigation)
+    testImplementation(libs.koin.test.junit4)
 }

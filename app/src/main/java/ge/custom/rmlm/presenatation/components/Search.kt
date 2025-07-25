@@ -32,8 +32,7 @@ fun Search(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Dimens.spacingXS))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(vertical = Dimens.spacingXS, horizontal = Dimens.spacingS),
+            .background(MaterialTheme.colorScheme.surface),
         value = text.ifEmpty { hint },
         textStyle = MaterialTheme.typography.titleMedium.copy(
             color = if (text.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant
@@ -44,7 +43,12 @@ fun Search(
             onValueChange
         }
     ) {
-        Row {
+        Row(
+            modifier = Modifier.padding(
+                vertical = Dimens.spacingXS,
+                horizontal = Dimens.spacingS
+            )
+        ) {
             Icon(
                 painter = painterResource(R.drawable.ic_search),
                 null,
@@ -58,7 +62,7 @@ fun Search(
 
 @PreviewLightDark
 @Composable
-fun SearchPreview() {
+private fun SearchPreview() {
     RMLMTheme {
         var text by remember {
             mutableStateOf("")

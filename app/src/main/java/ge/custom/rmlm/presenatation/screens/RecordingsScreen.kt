@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ge.custom.rmlm.R
 import ge.custom.rmlm.common.Result
+import ge.custom.rmlm.domain.model.RecordingData
 import ge.custom.rmlm.presenatation.components.Search
 import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.RMLMTheme
@@ -45,10 +46,10 @@ fun RecordingsScreen(
 }
 
 @Composable
-fun RecordingsScreen(
+private fun RecordingsScreen(
     modifier: Modifier,
     searchValue: String,
-    recordings: Result<List<String>>,
+    recordings: Result<List<RecordingData>>,
     onSearchValueChange: (String) -> Unit
 ) {
     Column(
@@ -65,12 +66,19 @@ fun RecordingsScreen(
         }
 
         when (recordings) {
-            is Result.Error -> ErrorScreen(Modifier.fillMaxSize())
+            is Result.Error -> ErrorScreen(Modifier.fillMaxSize(), recordings.errorMessage)
             Result.Loading -> LoadingScreen(Modifier.fillMaxSize())
             is Result.Success -> {
-                LazyColumn {
-                    items(recordings.data.size) { index ->
 
+                LazyColumn {
+                    recordings.data.forEach { item ->
+                        item {
+                            Text(
+                                text = item.name,
+                                modifier = Modifier
+                                    .padding(Dimens.spacingM)
+                            )
+                        }
                     }
                 }
             }
@@ -79,7 +87,7 @@ fun RecordingsScreen(
 }
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
+private fun LoadingScreen(modifier: Modifier = Modifier) {
     Box(modifier) {
         CircularProgressIndicator(
             modifier = Modifier.align(Alignment.Center),
@@ -90,7 +98,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ErrorScreen(modifier: Modifier = Modifier) {
+private fun ErrorScreen(modifier: Modifier = Modifier, errorMessage: String?) {
     Column(
         modifier,
         verticalArrangement = Arrangement.Center,
@@ -103,7 +111,7 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
             contentDescription = null
         )
         Text(
-            text = stringResource(R.string.recordings_error_message),
+            text = errorMessage ?: stringResource(R.string.recordings_error_message),
             color = MaterialTheme.colorScheme.error
         )
     }
@@ -111,7 +119,7 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 
 @PreviewLightDark
 @Composable
-fun RecordingsScreenPreview() {
+private fun RecordingsScreenPreview() {
     KoinScreenPreview {
         RMLMTheme {
             RecordingsScreen(

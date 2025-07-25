@@ -1,26 +1,29 @@
 package ge.custom.rmlm.di
 
-import ge.custom.rmlm.data.suspendrunners.DefaultSuspendRunner
-import ge.custom.rmlm.domain.usecase.base.SuspendRunner
+import ge.custom.rmlm.data.repository.RecordingsRepositoryImpl
+import ge.custom.rmlm.domain.repository.RecordingsRepository
+import ge.custom.rmlm.domain.usecase.LoadRecordingsUseCase
+import ge.custom.rmlm.presenatation.activity.MainActivityViewModel
 import ge.custom.rmlm.presenatation.viewmodels.RecordViewModel
 import ge.custom.rmlm.presenatation.viewmodels.RecordingsViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModule = module {
-    single<CoroutineDispatcher>(named(IODispatcher)) {
-        Dispatchers.IO
-    }
-    single<SuspendRunner>(named(DefaultSuspendRunner)) {
-        DefaultSuspendRunner(get(named(IODispatcher)))
-    }
+    includes(sharedModule)
 
-    viewModel { RecordViewModel() }
-    viewModel { RecordingsViewModel() }
+    single { androidContext().contentResolver }
+    single<RecordingsRepository> { RecordingsRepositoryImpl(get()) }
+
+    single {
+        LoadRecordingsUseCase(
+            get(),
+            get(named(DefaultSuspendRunner))
+        )
+    }
+    viewModel { RecordViewModel(get()) }
+    viewModel { RecordingsViewModel(get()) }
+    viewModel { MainActivityViewModel() }
 }
-
-const val DefaultSuspendRunner = "DefaultSuspendRunner"
-const val IODispatcher = "IODispatcher"

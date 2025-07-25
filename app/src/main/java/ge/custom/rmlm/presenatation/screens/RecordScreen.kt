@@ -1,5 +1,11 @@
 package ge.custom.rmlm.presenatation.screens
 
+import android.Manifest
+import android.content.Context
+import android.os.Build
+import android.os.Parcelable
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,14 +37,20 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.content.PermissionChecker
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ge.custom.rmlm.R
+import ge.custom.rmlm.common.openPermissionSettings
 import ge.custom.rmlm.presenatation.components.Choice
 import ge.custom.rmlm.presenatation.components.Picker
+import ge.custom.rmlm.presenatation.components.QuestionDialog
+import ge.custom.rmlm.presenatation.recorder.RecorderDuration
+import ge.custom.rmlm.presenatation.service.RecorderService
 import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.LocalCustomColorsPalette
 import ge.custom.rmlm.presenatation.theme.RMLMTheme
 import ge.custom.rmlm.presenatation.viewmodels.RecordViewModel
+import kotlinx.parcelize.Parcelize
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -46,15 +58,35 @@ fun RecordScreen(
     modifier: Modifier = Modifier,
     viewModel: RecordViewModel = koinViewModel()
 ) {
-    val recordUiState by viewModel.recordUiState.collectAsStateWithLifecycle()
-    RecordScreen(modifier, recordUiState.isRecording)
+    val recordState by viewModel.recordState.collectAsStateWithLifecycle()
+    RecordScreen(
+        modifier = modifier,
+        isRecording = recordState.isRecording,
+        recordDuration = recordState.recorderDuration,
+        onChoiceClick = { choice ->
+            viewModel.setDuration(choice)
+        }
+    )
 }
 
 @Composable
-fun RecordScreen(modifier: Modifier = Modifier, isRecording: Boolean) {
+private fun RecordScreen(
+    modifier: Modifier = Modifier,
+    isRecording: Boolean,
+    recordDuration: RecorderDuration?,
+    onChoiceClick: (RecorderDuration) -> Unit
+) {
+    var showDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+    if (showDialog) {
+        PermissionDialog {
+            showDialog = false
+        }
+    }
     Column(
         modifier
-            .background(MaterialTheme.colorScheme.background)
+            .background(color = MaterialTheme.colorScheme.background)
             .fillMaxSize()
             .padding(top = Dimens.spacing4XL)
             .verticalScroll(rememberScrollState())
@@ -76,23 +108,25 @@ fun RecordScreen(modifier: Modifier = Modifier, isRecording: Boolean) {
                 StartRecordingButton(
                     Modifier
                         .align(Alignment.Center)
-                        .padding(top = 140.dp)
-                )
+                        .padding(top = 140.dp),
+                    recordDuration
+                ) {
+                    showDialog = true
+                }
             }
 
-            val context = LocalContext.current
-            var title by rememberSaveable {
-                mutableStateOf(context.getString(R.string.picker_title))
-            }
-            DurationPicker(isEnabled = isRecording, title = title) { choice ->
-                title = choice.title
+            DurationPicker(
+                isEnabled = !isRecording,
+                currentDuration = recordDuration?.duration
+            ) { choice ->
+                onChoiceClick(choice)
             }
         }
     }
 }
 
 @Composable
-fun WelcomeText(modifier: Modifier = Modifier) {
+private fun WelcomeText(modifier: Modifier = Modifier) {
     Text(
         stringResource(R.string.record_welcome_to),
         modifier = modifier,
@@ -110,7 +144,7 @@ fun WelcomeText(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun DescriptionText(modifier: Modifier = Modifier, isRecording: Boolean) {
+private fun DescriptionText(modifier: Modifier = Modifier, isRecording: Boolean) {
     Text(
         text = buildAnnotatedString {
             val description = stringResource(
@@ -155,37 +189,107 @@ fun DescriptionText(modifier: Modifier = Modifier, isRecording: Boolean) {
     )
 }
 
+private fun startService(context: Context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        context.startForegroundService(
+            RecorderService.getStartIntent(
+                context
+            )
+        )
+    } else {
+        context.startService(
+            RecorderService.getStartIntent(
+                context
+            )
+        )
+    }
+}
+
 @Composable
-fun StartRecordingButton(modifier: Modifier = Modifier) {
+private fun StartRecordingButton(
+    modifier: Modifier = Modifier,
+    recordDuration: RecorderDuration?,
+    showPermissionDialog: () -> Unit
+) {
+    val context = LocalContext.current
+    val recordVoicePermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            recordDuration?.let { choice ->
+                startService(context)
+            }
+        } else {
+            showPermissionDialog()
+        }
+    }
     Button(
         modifier = modifier,
         shape = RoundedCornerShape(Dimens.spacingXS),
+        enabled = recordDuration != null,
         colors = buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        onClick = {}
+        onClick = {
+            val recorderPermission = PermissionChecker.checkSelfPermission(
+                context, Manifest.permission.RECORD_AUDIO
+            )
+            if (recorderPermission != PermissionChecker.PERMISSION_GRANTED) {
+                recordVoicePermissionLauncher.launch(
+                    Manifest.permission.RECORD_AUDIO
+                )
+            } else {
+                startService(context)
+            }
+        }
     ) {
         Text(stringResource(R.string.record_start_recording))
     }
 }
 
 @Composable
-fun StopAndSaveButtons(modifier: Modifier = Modifier) {
+private fun PermissionDialog(modifier: Modifier = Modifier, hideDialog: () -> Unit) {
+    val context = LocalContext.current
+    QuestionDialog(
+        modifier,
+        onDismissRequest = hideDialog,
+        text = stringResource(R.string.record_audio_permission_description),
+        positiveText = stringResource(R.string.record_audio_permission_grant),
+        negativeText = stringResource(R.string.record_audio_permission_close),
+        onPositiveClick = {
+            openPermissionSettings(context)
+            hideDialog()
+        },
+        onNegativeClick = hideDialog
+    )
+}
+
+@Composable
+private fun StopAndSaveButtons(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(
         modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            SaveButton(textResId = R.string.record_save_and_stop_recording)
-            SaveButton(textResId = R.string.record_save_and_restart_recording)
+            SaveTypeButton(textResId = R.string.record_save_and_stop_recording) {
+                context.startService(RecorderService.getSaveIntent(context))
+            }
+            SaveTypeButton(textResId = R.string.record_save_and_restart_recording) {
+                context.startService(RecorderService.getSaveAndRestartIntent(context))
+            }
         }
         StopButton()
     }
 }
 
 @Composable
-fun SaveButton(modifier: Modifier = Modifier, @StringRes textResId: Int) {
+private fun SaveTypeButton(
+    modifier: Modifier = Modifier,
+    @StringRes textResId: Int,
+    onClick: () -> Unit = {}
+) {
     Button(
         modifier = modifier,
         shape = RoundedCornerShape(Dimens.spacingM),
@@ -193,7 +297,7 @@ fun SaveButton(modifier: Modifier = Modifier, @StringRes textResId: Int) {
             containerColor = LocalCustomColorsPalette.current.success.color,
             contentColor = LocalCustomColorsPalette.current.success.onColor
         ),
-        onClick = {},
+        onClick = onClick,
         contentPadding = PaddingValues(
             horizontal = Dimens.spacingS,
             vertical = Dimens.spacingM
@@ -204,7 +308,8 @@ fun SaveButton(modifier: Modifier = Modifier, @StringRes textResId: Int) {
 }
 
 @Composable
-fun StopButton(modifier: Modifier = Modifier) {
+private fun StopButton(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Button(
         modifier = modifier.padding(top = Dimens.spacing3XL),
         shape = RoundedCornerShape(Dimens.spacingXS),
@@ -212,7 +317,11 @@ fun StopButton(modifier: Modifier = Modifier) {
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = MaterialTheme.colorScheme.onError
         ),
-        onClick = {},
+        onClick = {
+            context.startService(
+                RecorderService.getStopIntent(context)
+            )
+        },
         contentPadding = PaddingValues(
             horizontal = Dimens.spacingS,
             vertical = Dimens.spacingXS
@@ -222,54 +331,45 @@ fun StopButton(modifier: Modifier = Modifier) {
     }
 }
 
+
 @Composable
-fun DurationPicker(
+private fun DurationPicker(
     isEnabled: Boolean,
-    title: String,
-    onChoiceClick: (DurationChoice) -> Unit
+    currentDuration: Int?,
+    onChoiceClick: (RecorderDuration) -> Unit
 ) {
     Picker(
         Modifier.padding(
             horizontal = Dimens.spacing3XL, vertical = Dimens.spacing3XL
         ),
         isEnabled,
-        title,
-        listOf(
+        currentDuration?.let {
+            stringResource(R.string.picker_choice_duration, it)
+        } ?: stringResource(R.string.picker_title),
+        RecorderDuration.entries.map { duration ->
             DurationChoice(
-                stringResource(R.string.picker_choice_duration_5),
-                5
-            ),
-            DurationChoice(
-                stringResource(R.string.picker_choice_duration_10),
-                10
-            ),
-            DurationChoice(
-                stringResource(R.string.picker_choice_duration_20),
-                20
-            ),
-            DurationChoice(
-                stringResource(R.string.picker_choice_duration_30),
-                30
-            ),
-            DurationChoice(
-                stringResource(R.string.picker_choice_duration_60),
-                60
-            ),
-        ),
+                stringResource(
+                    R.string.picker_choice_duration,
+                    duration.duration
+                ),
+                duration
+            )
+        },
         onChoiceClick = { choice ->
-            onChoiceClick(choice)
+            onChoiceClick(choice.duration)
         }
     )
 }
 
+@Parcelize
 data class DurationChoice(
     override val title: String,
-    val durationInMinutes: Int
-) : Choice(title)
+    val duration: RecorderDuration
+) : Choice(title), Parcelable
 
 @PreviewLightDark
 @Composable
-fun RecordScreenPreview() {
+private fun RecordScreenPreview() {
     KoinScreenPreview {
         RMLMTheme {
             RecordScreen()
