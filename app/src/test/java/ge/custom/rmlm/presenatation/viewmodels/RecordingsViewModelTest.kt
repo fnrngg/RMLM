@@ -60,14 +60,13 @@ class RecordingsViewModelTest {
             assert(!viewModel.recordingsUiState.value.showDeleteDialog)
             assert(viewModel.recordingsUiState.value.chosenRecordingUri == null)
             assert(viewModel.recordingsUiState.value.recordings is Result.Loading)
-            delay(900L)
+            delay(600L)
             val initialResult = Result.Success<List<RecordingUiData>>(emptyList())
             assert(viewModel.recordingsUiState.value.recordings == initialResult)
         }
 
     @Test
     fun `search should update search value and load recordings`() = runTest {
-        delay(100) // delay initial viewmodel setup, otherwise fails to catch search value if sharedFlow replay is zero
         assert(viewModel.recordingsUiState.value.search.isEmpty())
         viewModel.search("test")
         assert(viewModel.recordingsUiState.value.search == "test")
@@ -88,10 +87,8 @@ class RecordingsViewModelTest {
 
     @Test
     fun `deleteAgreed should call deleteRecordingUseCase, update showDeleteDialog and chosenRecordingUri to null`() = runTest {
-        delay(100) // delay initial viewmodel setup, otherwise fails to catch delete value if sharedFlow replay is zero
         viewModel.deleteRecording(mockedUri)
         viewModel.deleteAgreed()
-        delay(100)
         coVerify { deleteRecordingUseCase(mockedUri) }
         assert(!viewModel.recordingsUiState.value.showDeleteDialog)
         assert(viewModel.recordingsUiState.value.chosenRecordingUri == null)

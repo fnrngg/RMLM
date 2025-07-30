@@ -40,7 +40,8 @@ android {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
             freeCompilerArgs.addAll(
-                "-opt-in=kotlinx.coroutines.FlowPreview"
+                "-opt-in=kotlinx.coroutines.FlowPreview",
+                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
             )
         }
     }
