@@ -1,11 +1,13 @@
 package ge.custom.rmlm.data.repository
 
 import android.content.ContentResolver
-import android.content.ContentValues
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
+import ge.custom.rmlm.data.repository.MediaStoreParamsProvider.Companion.AUDIO_MIME_TYPE
+import ge.custom.rmlm.data.repository.MediaStoreParamsProvider.Companion.DATE_PATTERN
+import ge.custom.rmlm.data.repository.MediaStoreParamsProvider.Companion.IS_PENDING_FALSE
+import ge.custom.rmlm.data.repository.MediaStoreParamsProvider.Companion.RANDOM_ACCESS_MODE_READ
+import ge.custom.rmlm.data.repository.MediaStoreParamsProvider.Companion.SAVED_FILE_NAME
 import ge.custom.rmlm.domain.repository.RecordRepository
 import ge.custom.rmlm.presenatation.recorder.RecorderImpl.Companion.SAMPLE_RATE
 import java.io.File
@@ -17,7 +19,8 @@ import kotlin.math.min
 
 class RecordRepositoryImpl(
     private val wavHeaderGenerator: AudioHeaderGenerator,
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
+    private val mediaStoreParamsProvider: MediaStoreParamsProvider
 ) : RecordRepository {
 
     override suspend fun saveRecordingAsWAV(
@@ -33,11 +36,7 @@ class RecordRepositoryImpl(
         )
 
         val mimeType = AUDIO_MIME_TYPE
-        val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        } else {
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        }
+        val collection = mediaStoreParamsProvider.getCollection()
 
         val formatedDate = SimpleDateFormat(
             DATE_PATTERN,
@@ -46,24 +45,7 @@ class RecordRepositoryImpl(
         val uniqueFilename =
             SAVED_FILE_NAME.format(formatedDate)
 
-        val values = ContentValues().apply {
-            put(MediaStore.Audio.Media.DISPLAY_NAME, uniqueFilename)
-            put(MediaStore.Audio.Media.MIME_TYPE, mimeType)
-            put(MediaStore.Audio.Media.IS_PENDING, IS_PENDING_TRUE)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                put(
-                    MediaStore.Audio.Media.RELATIVE_PATH,
-                    Environment.DIRECTORY_RECORDINGS + SAVED_FILE_DIRECTORY
-                )
-            } else {
-                put(
-                    MediaStore.Audio.Media.DATA,
-                    Environment.getExternalStorageDirectory().absolutePath + SAVED_FILE_PATH.format(
-                        uniqueFilename
-                    )
-                )
-            }
-        }
+        val values = mediaStoreParamsProvider.getContentValues(uniqueFilename, mimeType)
 
         var newUri: Uri? = null
         try {
@@ -116,13 +98,5 @@ class RecordRepositoryImpl(
 
     companion object {
         const val CHANNEL_COUNT = 1
-        private const val AUDIO_MIME_TYPE = "audio/mpeg"
-        private const val DATE_PATTERN = "dd-MM-yy HH:mm"
-        private const val RANDOM_ACCESS_MODE_READ = "r"
-        private const val SAVED_FILE_PATH = "/RMLM/%s"
-        private const val SAVED_FILE_NAME = "MLM %s"
-        private const val SAVED_FILE_DIRECTORY = "/RMLM"
-        private const val IS_PENDING_TRUE = 1
-        private const val IS_PENDING_FALSE = 0
     }
 }

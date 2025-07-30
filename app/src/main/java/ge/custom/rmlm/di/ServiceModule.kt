@@ -38,11 +38,13 @@ val serviceModule = module {
             )
         }
 
-        factory<Recorder> { RecorderImpl(
-            androidContext().filesDir.absolutePath,
-            get(named(IODispatcher)),
-            get(),
-            get())
+        factory<Recorder> {
+            RecorderImpl(
+                androidContext().filesDir.absolutePath,
+                get(named(IODispatcher)),
+                get(),
+                get()
+            )
         }
 
         scoped<AudioHeaderGenerator>(named(WAV_HEADER_GENERATOR)) { WAVHeaderGenerator() }
@@ -50,13 +52,14 @@ val serviceModule = module {
         scoped<RecordRepository> {
             RecordRepositoryImpl(
                 get(named(WAV_HEADER_GENERATOR)),
+                get(),
                 get()
             )
         }
 
         scoped<SaveRecordingUseCase> {
             SaveRecordingUseCase(
-                get(named(DefaultSuspendRunner)),
+                get(named(RecordingErrorsSuspendRunner)),
                 get()
             )
         }

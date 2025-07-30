@@ -80,8 +80,12 @@ class RecorderService() : Service(), AndroidScopeComponent {
         val notification = NotificationCompat
             .Builder(this, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_arrow_down)
-            .setContentTitle("Currently you are recording your last ${recorderDuration.duration}")
-            .setContentText("Currently you are recording your last ${recorderDuration.duration}")
+            .setContentTitle(
+                getString(
+                    R.string.recorder_service_notification_title,
+                    recorderDuration.duration
+                ))
+            .setContentText(getString(R.string.recorder_service_notification_description))
             .addAction(
                 R.drawable.ic_arrow_down,
                 getString(R.string.notification_save_and_restart), saveAndRestartIntent
@@ -119,9 +123,13 @@ class RecorderService() : Service(), AndroidScopeComponent {
 
         recorder = get()
         startInCoroutine {
-            recorder?.startRecording(
-                recorderDuration
-            )
+            try {
+                recorder?.startRecording(
+                    recorderDuration
+                )
+            } catch (_: Exception) {
+                stopSelf()
+            }
         }
     }
 

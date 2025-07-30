@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,14 +34,14 @@ fun Search(
             .fillMaxWidth()
             .clip(RoundedCornerShape(Dimens.spacingXS))
             .background(MaterialTheme.colorScheme.surface),
-        value = text.ifEmpty { hint },
+        value = text,
         textStyle = MaterialTheme.typography.titleMedium.copy(
-            color = if (text.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant
+            color = if (text.isEmpty()) MaterialTheme.colorScheme.error
             else MaterialTheme.colorScheme.onSurface
         ),
         singleLine = true,
-        onValueChange = {
-            onValueChange
+        onValueChange = { newSearch ->
+            onValueChange(newSearch)
         }
     ) {
         Row(
@@ -55,7 +56,11 @@ fun Search(
                 modifier = Modifier.padding(end = Dimens.spacingS),
                 tint = MaterialTheme.colorScheme.onSurface
             )
-            it()
+            if (text.isEmpty()) {
+                Text(hint)
+            } else {
+                it()
+            }
         }
     }
 }

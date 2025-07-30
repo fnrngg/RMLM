@@ -15,7 +15,11 @@
     <string name="record_save_and_restart_recording">Save &amp; Restart</string>
     <string name="record_stop_recording">Stop Recording</string>
     <string name="recordings_search_hint">Search</string>
-    <string name="recordings_error_message">Please Enable Storage Permission</string>
+    <string name="recordings_error_message">Unexpected error occurred</string>
+    <string name="recordings_error_message_permission_denied">Please allow storage permission to access recordings</string>
+    <string name="recordings_empty_title">No recordings yet</string>
+    <string name="recordings_empty_description">Don\'t forget to save your last minutes whenever necessary</string>
+    <string name="recordings_empty_search_title">No recordings with such name</string>
     <string name="record_audio_permission_description">Please grant audio recording permission, otherwise you will not be able to record your voice</string>
     <string name="record_audio_permission_close">Close</string>
     <string name="record_audio_permission_grant">Grant</string>
@@ -26,4 +30,9 @@
     <string name="record_notification_permission_grant">Grant</string>
     <string name="record_notification_permission_close">Close</string>
     <string name="notification_name_recording_management">Recording Management</string>
+    <string name="recordings_delete_dialog_text">Are you sure you want delete this file?</string>
+    <string name="recordings_delete_dialog_negative_text">Delete</string>
+    <string name="recordings_delete_dialog_positive_text">Cancel</string>
+    <string name="recorder_service_notification_title">Currently you are recording your last %d minutes</string>
+    <string name="recorder_service_notification_description">To change duration please open application</string>
 </resources>

@@ -62,7 +62,7 @@ fun QuestionDialog(
                 Text(
                     text = positiveText,
                     modifier = Modifier.clickable {
-                        onPositiveClick
+                        onPositiveClick()
                     }
                 )
             }

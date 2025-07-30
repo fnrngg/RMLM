@@ -1,6 +1,8 @@
 package ge.custom.rmlm.di
 
+import ge.custom.rmlm.data.repository.MediaStoreParamsProvider
 import ge.custom.rmlm.data.suspendrunners.DefaultSuspendRunner
+import ge.custom.rmlm.data.suspendrunners.RecordingErrorsSuspendRunner
 import ge.custom.rmlm.domain.usecase.base.SuspendRunner
 import ge.custom.rmlm.presenatation.service.RecorderServiceState
 import ge.custom.rmlm.presenatation.service.RecorderServiceStateImpl
@@ -16,8 +18,20 @@ val sharedModule = module {
     single<SuspendRunner>(named(DefaultSuspendRunner)) {
         DefaultSuspendRunner(get(named(IODispatcher)))
     }
+
+    single<SuspendRunner>(named(RecordingErrorsSuspendRunner)) {
+        RecordingErrorsSuspendRunner(
+            get(
+                named(
+                    IODispatcher
+                )
+            )
+        )
+    }
     single<RecorderServiceState> { RecorderServiceStateImpl() }
+    single { MediaStoreParamsProvider() }
 }
 
 const val DefaultSuspendRunner = "DefaultSuspendRunner"
+const val RecordingErrorsSuspendRunner = "RecordingErrorsSuspendRunner"
 const val IODispatcher = "IODispatcher"

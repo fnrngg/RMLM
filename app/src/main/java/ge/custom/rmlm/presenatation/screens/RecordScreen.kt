@@ -88,8 +88,8 @@ private fun RecordScreen(
         modifier
             .background(color = MaterialTheme.colorScheme.background)
             .fillMaxSize()
-            .padding(top = Dimens.spacing4XL)
             .verticalScroll(rememberScrollState())
+            .padding(top = Dimens.spacing4XL)
     ) {
         WelcomeText(modifier.align(Alignment.CenterHorizontally))
         DescriptionText(
@@ -370,7 +370,7 @@ data class DurationChoice(
 @PreviewLightDark
 @Composable
 private fun RecordScreenPreview() {
-    KoinScreenPreview {
+    KoinScreenPreview(context = LocalContext.current) {
         RMLMTheme {
             RecordScreen()
         }

@@ -37,7 +37,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+            freeCompilerArgs.addAll(
+                "-opt-in=kotlinx.coroutines.FlowPreview"
+            )
+        }
+    }
+    tasks.withType<Test>().configureEach {
+        jvmArgs(
+            "-XX:+EnableDynamicAgentLoading"
+        )
     }
     buildFeatures {
         compose = true
@@ -70,4 +80,6 @@ dependencies {
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.koin.compose.viewmodel.navigation)
     testImplementation(libs.koin.test.junit4)
+    testImplementation(libs.mockk.core)
+    testImplementation(libs.kotlin.coroutines.test)
 }

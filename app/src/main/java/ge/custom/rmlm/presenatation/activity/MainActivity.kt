@@ -1,10 +1,5 @@
 package ge.custom.rmlm.presenatation.activity
-
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
@@ -41,18 +35,10 @@ import ge.custom.rmlm.presenatation.screens.RecordScreen
 import ge.custom.rmlm.presenatation.screens.RecordingsScreen
 import ge.custom.rmlm.presenatation.screens.Route
 import ge.custom.rmlm.presenatation.screens.navDestinations
-import ge.custom.rmlm.presenatation.service.RecorderService.Companion.ACTION_NEW_RECORDING_SAVED
 import ge.custom.rmlm.presenatation.theme.RMLMTheme
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainActivityViewModel by viewModel()
-    private val newRecordingReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            viewModel.newRecordingSaved()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,17 +46,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainScreen()
         }
-        ContextCompat.registerReceiver(
-            this,
-            newRecordingReceiver,
-            IntentFilter(ACTION_NEW_RECORDING_SAVED),
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(newRecordingReceiver)
     }
 }
 
@@ -172,7 +147,7 @@ private fun NotificationPermissionDialog(
 @PreviewLightDark
 @Composable
 private fun MainScreenPreview() {
-    KoinScreenPreview {
+    KoinScreenPreview(context = LocalContext.current) {
         MainScreen()
     }
 }

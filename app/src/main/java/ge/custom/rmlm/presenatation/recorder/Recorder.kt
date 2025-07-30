@@ -35,23 +35,22 @@ class RecorderImpl(
         ENCODING_PCM_16BIT
     ) * 2
 
-    private suspend fun initData() {
-
-        bufferMutex.withLock {
-            recordingTempFile = File(
-                localDirPath,
-                RECORDING_TEMP_NAME.format(System.currentTimeMillis())
-            )
-            currentOffset = 0
-            recordingTempRandomAccessFile = RandomAccessFile(recordingTempFile, READ_WRITE_ACCESS)
-            isBufferFull = false
-        }
+    private fun initData() {
+        recordingTempFile = File(
+            localDirPath,
+            RECORDING_TEMP_NAME.format(System.currentTimeMillis())
+        )
+        currentOffset = 0
+        recordingTempRandomAccessFile = RandomAccessFile(recordingTempFile, READ_WRITE_ACCESS)
+        isBufferFull = false
     }
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     override suspend fun startRecording(duration: RecorderDuration) {
 
-        initData()
+        bufferMutex.withLock {
+            initData()
+        }
 
         val recordingSize = getRecordingBufferSize(duration)
 
@@ -131,7 +130,7 @@ class RecorderImpl(
             }
         }
 
-        file?.let { audioBytes ->
+        file?.let { file ->
             saveRecordingUseCase(SaveRecordingUseCaseParam(file, offset, minBufferSize))
         }
         if (!restart) {

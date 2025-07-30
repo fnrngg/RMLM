@@ -9,7 +9,8 @@ class LoadRecordingsUseCase(
     private val recordingRepository: RecordingsRepository,
     suspendRunner: SuspendRunner
 ) : UseCase<String, List<RecordingData>>(suspendRunner) {
+
     override suspend fun execute(params: String): List<RecordingData> {
-        return recordingRepository.getRecordings()
+        return recordingRepository.getRecordings(params)
     }
 }

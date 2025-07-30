@@ -1,0 +1,27 @@
+package ge.custom.rmlm.presenatation.mapper
+
+import ge.custom.rmlm.domain.model.RecordingData
+import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
+import org.junit.Test
+
+class RecordingMapperTest {
+
+    @Test
+    fun `mapRecordingDataToRecordingUiData should map RecordingData to RecordingUiData`() =
+        runTest {
+            val recordingMapper = RecordingMapper()
+            val recordingData = RecordingData(
+                "test",
+                mockk(),
+                1000,
+                1753822725000
+            )
+            val recordingUiData = recordingMapper.mapRecordingDataToRecordingUiData(recordingData)
+            assert(recordingUiData.name == recordingData.name)
+            assert(recordingUiData.uri == recordingData.uri)
+
+            assert(recordingUiData.duration == "00:01")
+            assert(recordingUiData.date == "07/30/2025 00:58:45")
+        }
+}
