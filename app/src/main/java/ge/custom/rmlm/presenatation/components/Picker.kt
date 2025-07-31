@@ -7,14 +7,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,6 +32,7 @@ import ge.custom.rmlm.presenatation.recorder.RecorderDuration
 import ge.custom.rmlm.presenatation.screens.DurationChoice
 import ge.custom.rmlm.presenatation.theme.Dimens
 import ge.custom.rmlm.presenatation.theme.RMLMTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun <T : Choice> Picker(
@@ -43,6 +49,8 @@ fun <T : Choice> Picker(
     val pickerShape = RoundedCornerShape(
         Dimens.spacingXS
     )
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier
             .border(
@@ -54,7 +62,7 @@ fun <T : Choice> Picker(
                 color = if (isEnabled) MaterialTheme.colorScheme.surface
                 else MaterialTheme.colorScheme.surfaceVariant,
                 shape = pickerShape
-            )
+            ).bringIntoViewRequester(bringIntoViewRequester)
     ) {
         Row(
             modifier = Modifier
@@ -86,6 +94,12 @@ fun <T : Choice> Picker(
         }
 
         if (isOpen) {
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    bringIntoViewRequester.bringIntoView()
+                }
+            }
+
             items.forEach { choice ->
                 Column(
                     modifier = Modifier
