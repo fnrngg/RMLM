@@ -1,7 +1,8 @@
-This application allows users to constantly record surrounding voice, but cache only last pre-chosen duration and save their last minutes, whenever they need it.
+<p align="center">This application allows users to constantly record surrounding voice, but cache only last pre-chosen duration and save their last minutes, whenever they need it.</p>
 
 
-<img width="1120" height="571" alt="image" src="https://github.com/user-attachments/assets/434346b1-bcbc-43e0-a469-629b441612fb" />
+<img width="1085" height="567" alt="image" src="https://github.com/user-attachments/assets/0dc7c516-bddb-4ade-a49c-c7060edbe467" />
+
 
 
 <img width="1362" height="570" alt="image" src="https://github.com/user-attachments/assets/1166d83e-d64a-4f78-8df8-c1e7b097f539" />
