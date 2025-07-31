@@ -66,7 +66,11 @@ fun RecordingsScreen(
             viewModel.refresh()
         },
         onShareClick = { uri ->
-            openShareChooser(context, uri, "audio/mpeg")
+            try {
+                openShareChooser(context, uri, "audio/mpeg")
+            } catch (_: Exception) {
+                // handle no sending app
+            }
         },
         onDeleteClick = { uri ->
             viewModel.deleteRecording(uri)
@@ -216,7 +220,11 @@ private fun RecordingListItem(
     Row(
         modifier = modifier.clickable(
             onClick = {
-                openAudioPlayer(context, uri)
+                try {
+                    openAudioPlayer(context, uri)
+                } catch (_: Exception) {
+                    // handle no audio player
+                }
             }
         ),
         verticalAlignment = Alignment.CenterVertically
