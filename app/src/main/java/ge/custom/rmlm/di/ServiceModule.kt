@@ -13,6 +13,9 @@ import ge.custom.rmlm.domain.usecase.SaveRecordingUseCase
 import ge.custom.rmlm.presenatation.recorder.Recorder
 import ge.custom.rmlm.presenatation.recorder.RecorderImpl
 import ge.custom.rmlm.presenatation.recorder.RecorderImpl.Companion.SAMPLE_RATE
+import ge.custom.rmlm.presenatation.recorder.RecordingCache
+import ge.custom.rmlm.presenatation.recorder.RecordingCacheImpl
+import ge.custom.rmlm.presenatation.recorder.TemporaryFileProvider
 import ge.custom.rmlm.presenatation.service.RecorderService
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -38,11 +41,20 @@ val serviceModule = module {
             )
         }
 
+        scoped { TemporaryFileProvider() }
+
+        factory<RecordingCache> {
+            RecordingCacheImpl(
+                androidContext().filesDir.absolutePath,
+                get(),
+                get()
+            )
+        }
+
         factory<Recorder> {
             RecorderImpl(
-                androidContext().filesDir.absolutePath,
-                get(named(IODispatcher)),
                 get(),
+                get(named(IODispatcher)),
                 get()
             )
         }

@@ -1,56 +1,27 @@
 package ge.custom.rmlm.presenatation.recorder
 
-import android.Manifest
 import android.media.AudioFormat
 import android.media.AudioFormat.ENCODING_PCM_16BIT
 import android.media.AudioRecord
 import android.os.Parcelable
-import androidx.annotation.RequiresPermission
-import ge.custom.rmlm.domain.usecase.SaveRecordingUseCase
-import ge.custom.rmlm.domain.usecase.SaveRecordingUseCaseParam
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import java.io.File
-import java.io.RandomAccessFile
 
 class RecorderImpl(
-    private val localDirPath: String,
+    private val recordingCache: RecordingCache,
     private val dispatcher: CoroutineDispatcher,
-    private val saveRecordingUseCase: SaveRecordingUseCase,
     private val audioRecord: AudioRecord
 ) : Recorder {
-    private var recordingTempFile: File? = null
-    private var recordingTempRandomAccessFile: RandomAccessFile? = null
-    private var isBufferFull: Boolean = false
-
-    // Replace with recordingTempFileStream.filePointer?
-    private var currentOffset = 0
-    private val bufferMutex = Mutex()
     private val minBufferSize = AudioRecord.getMinBufferSize(
         SAMPLE_RATE,
         AudioFormat.CHANNEL_IN_MONO,
         ENCODING_PCM_16BIT
     ) * 2
 
-    private fun initData() {
-        recordingTempFile = File(
-            localDirPath,
-            RECORDING_TEMP_NAME.format(System.currentTimeMillis())
-        )
-        currentOffset = 0
-        recordingTempRandomAccessFile = RandomAccessFile(recordingTempFile, READ_WRITE_ACCESS)
-        isBufferFull = false
-    }
-
-    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     override suspend fun startRecording(duration: RecorderDuration) {
 
-        bufferMutex.withLock {
-            initData()
-        }
+        recordingCache.initCache()
 
         val recordingSize = getRecordingBufferSize(duration)
 
@@ -68,34 +39,10 @@ class RecorderImpl(
                 )
                 if (readBytesCount < 0) {
                     break
+                } else if (readBytesCount == 0) {
+                    continue
                 }
-                bufferMutex.withLock {
-                    if (currentOffset + readBytesCount > recordingSize) {
-                        val cutPosition = recordingSize - currentOffset
-                        recordingTempRandomAccessFile?.write(
-                            tempBytes.copyOfRange(
-                                0,
-                                cutPosition
-                            )
-                        )
-                        recordingTempRandomAccessFile?.seek(0)
-                        recordingTempRandomAccessFile?.write(
-                            tempBytes.copyOfRange(
-                                cutPosition,
-                                readBytesCount
-                            )
-                        )
-                        currentOffset = readBytesCount - cutPosition
-                    } else {
-                        recordingTempRandomAccessFile?.write(
-                            tempBytes.copyOfRange(
-                                0,
-                                readBytesCount
-                            )
-                        )
-                        currentOffset += readBytesCount
-                    }
-                }
+                recordingCache.saveInCache(tempBytes, readBytesCount, recordingSize)
             }
         }
     }
@@ -103,38 +50,20 @@ class RecorderImpl(
     private fun getRecordingBufferSize(duration: RecorderDuration): Int =
         SAMPLE_RATE * BIT_DEPTH / 8 * SECONDS_IN_MINUTE * duration.duration
 
-    override suspend fun stopRecording(fromSave: Boolean) {
+    override suspend fun stopRecording() {
         audioRecord.stop()
         audioRecord.release()
-        bufferMutex.withLock {
-            if (!fromSave) {
-                recordingTempFile?.delete()
-            }
-            currentOffset = 0
-            isBufferFull = false
-            recordingTempFile = null
-            recordingTempRandomAccessFile?.close()
-            recordingTempRandomAccessFile = null
-        }
+        recordingCache.stopCaching(true)
     }
 
     override suspend fun saveRecording(
         restart: Boolean
     ) {
 
-        val (file, offset) = bufferMutex.withLock {
-            Pair(recordingTempFile, if (isBufferFull) currentOffset else 0).also {
-                if (restart) {
-                    initData()
-                }
-            }
-        }
+        recordingCache.saveRecording(restart, minBufferSize)
 
-        file?.let { file ->
-            saveRecordingUseCase(SaveRecordingUseCaseParam(file, offset, minBufferSize))
-        }
         if (!restart) {
-            stopRecording(true)
+            recordingCache.stopCaching(false)
         }
     }
 
@@ -142,8 +71,6 @@ class RecorderImpl(
         const val SAMPLE_RATE = 44100
         private const val BIT_DEPTH = 16
         private const val SECONDS_IN_MINUTE = 60
-        private const val RECORDING_TEMP_NAME = "recording_%d"
-        private const val READ_WRITE_ACCESS = "rw"
     }
 }
 
@@ -160,6 +87,6 @@ enum class RecorderDuration(
 
 interface Recorder {
     suspend fun startRecording(duration: RecorderDuration)
-    suspend fun stopRecording(fromSave: Boolean = false)
+    suspend fun stopRecording()
     suspend fun saveRecording(restart: Boolean)
 }
