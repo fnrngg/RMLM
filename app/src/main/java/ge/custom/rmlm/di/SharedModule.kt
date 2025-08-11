@@ -2,7 +2,9 @@ package ge.custom.rmlm.di
 
 import ge.custom.rmlm.data.repository.MediaStoreParamsProvider
 import ge.custom.rmlm.data.suspendrunners.DefaultSuspendRunner
-import ge.custom.rmlm.data.suspendrunners.RecordingErrorsSuspendRunner
+import ge.custom.rmlm.data.suspendrunners.errorhandlers.DefaultErrorHandler
+import ge.custom.rmlm.data.suspendrunners.errorhandlers.ErrorHandler
+import ge.custom.rmlm.data.suspendrunners.errorhandlers.RecordingIOErrorsHandler
 import ge.custom.rmlm.domain.usecase.base.SuspendRunner
 import ge.custom.rmlm.presenatation.service.RecorderServiceState
 import ge.custom.rmlm.presenatation.service.RecorderServiceStateImpl
@@ -15,15 +17,37 @@ val sharedModule = module {
     single<CoroutineDispatcher>(named(IODispatcher)) {
         Dispatchers.IO
     }
-    single<SuspendRunner>(named(DefaultSuspendRunner)) {
-        DefaultSuspendRunner(get(named(IODispatcher)))
+    single<ErrorHandler>(named(DefaultErrorHandler)) {
+        DefaultErrorHandler()
     }
-
-    single<SuspendRunner>(named(RecordingErrorsSuspendRunner)) {
-        RecordingErrorsSuspendRunner(
+    single<ErrorHandler>(named(RecordingIOErrorsHandler)) {
+        RecordingIOErrorsHandler()
+    }
+    single<SuspendRunner>(named(DefaultSuspendRunner)) {
+        DefaultSuspendRunner(
             get(
                 named(
                     IODispatcher
+                )
+            ),
+            get(
+                named(
+                    DefaultErrorHandler
+                )
+            )
+        )
+    }
+
+    single<SuspendRunner>(named(RecordingIOErrorsSuspendRunner)) {
+        DefaultSuspendRunner(
+            get(
+                named(
+                    IODispatcher
+                )
+            ),
+            get(
+                named(
+                    RecordingIOErrorsHandler
                 )
             )
         )
@@ -33,5 +57,7 @@ val sharedModule = module {
 }
 
 const val DefaultSuspendRunner = "DefaultSuspendRunner"
-const val RecordingErrorsSuspendRunner = "RecordingErrorsSuspendRunner"
+const val RecordingIOErrorsSuspendRunner = "RecordingIOErrorsSuspendRunner"
 const val IODispatcher = "IODispatcher"
+const val DefaultErrorHandler = "DefaultErrorHandler"
+private const val RecordingIOErrorsHandler = "RecordingIOErrorHandler"

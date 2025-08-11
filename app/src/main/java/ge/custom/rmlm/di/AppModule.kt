@@ -21,7 +21,7 @@ val appModule = module {
     single {
         LoadRecordingsUseCase(
             get(),
-            get(named(RecordingErrorsSuspendRunner))
+            get(named(RecordingIOErrorsSuspendRunner))
         )
     }
     single {

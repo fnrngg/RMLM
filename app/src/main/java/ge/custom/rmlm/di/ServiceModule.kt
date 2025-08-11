@@ -71,7 +71,7 @@ val serviceModule = module {
 
         scoped<SaveRecordingUseCase> {
             SaveRecordingUseCase(
-                get(named(RecordingErrorsSuspendRunner)),
+                get(named(RecordingIOErrorsSuspendRunner)),
                 get()
             )
         }
