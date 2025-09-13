@@ -50,10 +50,10 @@ class RecorderImpl(
     private fun getRecordingBufferSize(duration: RecorderDuration): Int =
         SAMPLE_RATE * BIT_DEPTH / 8 * SECONDS_IN_MINUTE * duration.duration
 
-    override suspend fun stopRecording() {
+    override suspend fun stopRecording(deleteCache: Boolean) {
         audioRecord.stop()
         audioRecord.release()
-        recordingCache.stopCaching(true)
+        recordingCache.stopCaching(deleteCache)
     }
 
     override suspend fun saveRecording(
@@ -63,7 +63,7 @@ class RecorderImpl(
         recordingCache.saveRecording(restart, minBufferSize)
 
         if (!restart) {
-            recordingCache.stopCaching(false)
+            stopRecording(false)
         }
     }
 
@@ -87,6 +87,6 @@ enum class RecorderDuration(
 
 interface Recorder {
     suspend fun startRecording(duration: RecorderDuration)
-    suspend fun stopRecording()
+    suspend fun stopRecording(deleteCache: Boolean = true)
     suspend fun saveRecording(restart: Boolean)
 }
