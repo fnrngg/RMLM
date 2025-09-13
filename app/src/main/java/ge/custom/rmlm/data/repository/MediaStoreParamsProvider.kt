@@ -60,7 +60,7 @@ class MediaStoreParamsProvider {
 
     companion object {
         private const val APP_MEDIA_DIRECTORY = "/RMLM/"
-        const val AUDIO_MIME_TYPE = "audio/mpeg"
+        const val AUDIO_MIME_TYPE = "audio/mp3"
         const val DATE_PATTERN = "dd-MM-yy HH:mm"
         const val RANDOM_ACCESS_MODE_READ = "r"
         const val SAVED_FILE_PATH = "/RMLM/%s"

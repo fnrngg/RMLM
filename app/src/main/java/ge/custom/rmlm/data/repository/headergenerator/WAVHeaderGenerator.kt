@@ -1,10 +1,10 @@
-package ge.custom.rmlm.data.repository
+package ge.custom.rmlm.data.repository.headergenerator
 
 import ge.custom.rmlm.data.repository.RecordRepositoryImpl.Companion.CHANNEL_COUNT
 
 class WAVHeaderGenerator : AudioHeaderGenerator {
     override fun getEncodedHeader(
-        pcmDataSize: Long,
+        pcmDataSize: Int,
         sampleRate: Int,
         channels: Int
     ): ByteArray {
@@ -55,8 +55,4 @@ class WAVHeaderGenerator : AudioHeaderGenerator {
         header[offset] = (value.toInt() and 0xff).toByte()
         header[offset + 1] = ((value.toInt() shr 8) and 0xff).toByte()
     }
-}
-
-interface AudioHeaderGenerator {
-    fun getEncodedHeader(pcmDataSize: Long, sampleRate: Int, channels: Int): ByteArray
 }

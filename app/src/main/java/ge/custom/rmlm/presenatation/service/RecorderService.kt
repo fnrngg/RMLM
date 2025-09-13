@@ -123,13 +123,13 @@ class RecorderService() : Service(), AndroidScopeComponent {
 
         recorder = get()
         startInCoroutine {
-            try {
+//            try {
                 recorder?.startRecording(
                     recorderDuration
                 )
-            } catch (_: Exception) {
-                stopSelf()
-            }
+//            } catch (_: Exception) {
+//                stopSelf()
+//            }
         }
     }
 

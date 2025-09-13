@@ -1,13 +1,14 @@
-package ge.custom.rmlm.presenatation.recorder
+package ge.custom.rmlm.presenatation.recorder.cache
 
 import ge.custom.rmlm.domain.usecase.SaveRecordingUseCase
 import ge.custom.rmlm.domain.usecase.SaveRecordingUseCaseParam
+import ge.custom.rmlm.presenatation.recorder.TemporaryFileProvider
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.io.RandomAccessFile
 
-class RecordingCacheImpl(
+class RecordingIOCache(
     private val localDirPath: String,
     private val temporaryFileProvider: TemporaryFileProvider,
     private val saveRecordingUseCase: SaveRecordingUseCase
@@ -95,15 +96,4 @@ class RecordingCacheImpl(
         private const val RECORDING_TEMP_NAME = "recording_%d"
         private const val READ_WRITE_ACCESS = "rw"
     }
-}
-
-interface RecordingCache {
-
-    fun initCache()
-
-    suspend fun saveInCache(tempBytes: ByteArray, readBytesCount: Int, recordingSize: Int)
-
-    suspend fun saveRecording(restart: Boolean, minBufferSize: Int)
-
-    suspend fun stopCaching(deleteCache: Boolean)
 }

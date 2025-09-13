@@ -2,6 +2,8 @@ package ge.custom.rmlm.presenatation.recorder
 
 import ge.custom.rmlm.common.Result
 import ge.custom.rmlm.domain.usecase.SaveRecordingUseCase
+import ge.custom.rmlm.presenatation.recorder.cache.RecordingCache
+import ge.custom.rmlm.presenatation.recorder.cache.RecordingCacheImpl
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -39,7 +41,7 @@ class RecordingCacheImplTest {
             },
             saveRecordingUseCase
         )
-        recordingCache.initCache()
+        recordingCache.initCache(duration.duration)
     }
 
     @Test

@@ -4,12 +4,14 @@ import android.media.AudioFormat
 import android.media.AudioFormat.ENCODING_PCM_16BIT
 import android.media.AudioRecord
 import android.os.Parcelable
+import ge.custom.rmlm.presenatation.recorder.cache.RecordingCache
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 
 class RecorderImpl(
-    private val recordingCache: RecordingCache,
+//    private val recordingIOCache: RecordingCache,
+    private val recordingInMemoryCache: RecordingCache,
     private val dispatcher: CoroutineDispatcher,
     private val audioRecord: AudioRecord
 ) : Recorder {
@@ -17,11 +19,12 @@ class RecorderImpl(
         SAMPLE_RATE,
         AudioFormat.CHANNEL_IN_MONO,
         ENCODING_PCM_16BIT
-    ) * 2
+    ) * MIN_BUFFER_MULTIPLIER
 
     override suspend fun startRecording(duration: RecorderDuration) {
 
-        recordingCache.initCache()
+//        recordingIOCache.initCache()
+        recordingInMemoryCache.initCache(duration.duration)
 
         val recordingSize = getRecordingBufferSize(duration)
 
@@ -42,7 +45,8 @@ class RecorderImpl(
                 } else if (readBytesCount == 0) {
                     continue
                 }
-                recordingCache.saveInCache(tempBytes, readBytesCount, recordingSize)
+//                recordingIOCache.saveInCache(tempBytes, readBytesCount, recordingSize)
+                recordingInMemoryCache.saveInCache(tempBytes, readBytesCount, recordingSize)
             }
         }
     }
@@ -53,17 +57,20 @@ class RecorderImpl(
     override suspend fun stopRecording() {
         audioRecord.stop()
         audioRecord.release()
-        recordingCache.stopCaching(true)
+//        recordingIOCache.stopCaching(true)
+        recordingInMemoryCache.stopCaching(true)
     }
 
     override suspend fun saveRecording(
         restart: Boolean
     ) {
 
-        recordingCache.saveRecording(restart, minBufferSize)
+//        recordingIOCache.saveRecording(restart, minBufferSize)
+        recordingInMemoryCache.saveRecording(restart, minBufferSize)
 
         if (!restart) {
-            recordingCache.stopCaching(false)
+            stopRecording()
+//            recordingIOCache.stopCaching(false)
         }
     }
 
@@ -71,6 +78,7 @@ class RecorderImpl(
         const val SAMPLE_RATE = 44100
         private const val BIT_DEPTH = 16
         private const val SECONDS_IN_MINUTE = 60
+        private const val MIN_BUFFER_MULTIPLIER = 2
     }
 }
 

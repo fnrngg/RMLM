@@ -8,4 +8,7 @@ interface RecordRepository {
         offset: Int,
         bufferSize: Int
     )
+    suspend fun saveRecordingAsAAC(
+        bytes: ByteArray
+    )
 }
