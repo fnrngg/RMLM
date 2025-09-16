@@ -3,13 +3,14 @@ package ge.custom.rmlm.presenatation.mapper
 import ge.custom.rmlm.domain.model.RecordingData
 import ge.custom.rmlm.presenatation.model.RecordingUiData
 import java.text.SimpleDateFormat
-import java.util.Locale
 
-class RecordingMapper {
+class RecordingMapper(private val localeProvider: LocaleProvider) {
 
     fun mapRecordingDataToRecordingUiData(recordingData: RecordingData): RecordingUiData {
-        val durationFormatter = SimpleDateFormat(DURATION_PATTERN, Locale.getDefault())
-        val dateFormatter = SimpleDateFormat(DATE_PATTERN, Locale.getDefault())
+        val currLocale = localeProvider.getCurrentLocale()
+        val durationFormatter =
+            SimpleDateFormat(DURATION_PATTERN, currLocale)
+        val dateFormatter = SimpleDateFormat(DATE_PATTERN, currLocale)
         return RecordingUiData(
             name = recordingData.name,
             uri = recordingData.uri,

@@ -9,12 +9,14 @@ import ge.custom.rmlm.presenatation.mapper.RecordingMapper
 import ge.custom.rmlm.presenatation.model.RecordingUiData
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
 
 class RecordingsViewModelTest {
 
@@ -22,7 +24,9 @@ class RecordingsViewModelTest {
     val mainCoroutineRule = TestCoroutinesRule()
 
     private lateinit var viewModel: RecordingsViewModel
-    private val mapper = RecordingMapper()
+    private val mapper = RecordingMapper(mockk {
+        every { getCurrentLocale() } returns Locale.ENGLISH
+    })
     val mockedUri = mockk<Uri>()
     private val testSearchData = listOf(
         RecordingData(

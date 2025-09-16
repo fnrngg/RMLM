@@ -1,16 +1,20 @@
 package ge.custom.rmlm.presenatation.mapper
 
 import ge.custom.rmlm.domain.model.RecordingData
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import java.util.Locale
 
 class RecordingMapperTest {
 
     @Test
     fun `mapRecordingDataToRecordingUiData should map RecordingData to RecordingUiData`() =
         runTest {
-            val recordingMapper = RecordingMapper()
+            val recordingMapper = RecordingMapper(mockk {
+                every { getCurrentLocale() } returns Locale.ENGLISH
+            })
             val recordingData = RecordingData(
                 "test",
                 mockk(),

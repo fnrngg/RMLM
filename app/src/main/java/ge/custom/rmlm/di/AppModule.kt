@@ -4,6 +4,8 @@ import ge.custom.rmlm.data.repository.RecordingsRepositoryImpl
 import ge.custom.rmlm.domain.repository.RecordingsRepository
 import ge.custom.rmlm.domain.usecase.DeleteRecordingUseCase
 import ge.custom.rmlm.domain.usecase.LoadRecordingsUseCase
+import ge.custom.rmlm.presenatation.mapper.LocaleProvider
+import ge.custom.rmlm.presenatation.mapper.LocaleProviderImpl
 import ge.custom.rmlm.presenatation.mapper.RecordingMapper
 import ge.custom.rmlm.presenatation.viewmodels.RecordViewModel
 import ge.custom.rmlm.presenatation.viewmodels.RecordingsViewModel
@@ -30,7 +32,8 @@ val appModule = module {
             get(named(DefaultSuspendRunner))
         )
     }
-    single { RecordingMapper() }
+    single<LocaleProvider> { LocaleProviderImpl() }
+    single { RecordingMapper(get()) }
     viewModel { RecordViewModel(get()) }
     viewModel { RecordingsViewModel(get(), get(), get()) }
 }
