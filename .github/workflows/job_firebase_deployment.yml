@@ -52,5 +52,5 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
           groups: testers
           file: app/build/outputs/apk/debug/app-debug.apk
-          releaseNotes: ${{ github.event_name = 'workflow_dispatch' && github.event.head_commit.message || github.event.inputs.release_notes }}
+          releaseNotes: ${{ github.event_name == 'push' || github.event_name == 'pull_request' && github.event.head_commit.message || github.event.inputs.release_notes }}
 
