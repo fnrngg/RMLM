@@ -10,7 +10,9 @@ class RecordingMapper(private val localeProvider: LocaleProvider) {
         val currLocale = localeProvider.getCurrentLocale()
         val durationFormatter =
             SimpleDateFormat(DURATION_PATTERN, currLocale)
+        durationFormatter.timeZone = localeProvider.getCurrentTimeZone()
         val dateFormatter = SimpleDateFormat(DATE_PATTERN, currLocale)
+        dateFormatter.timeZone = localeProvider.getCurrentTimeZone()
         return RecordingUiData(
             name = recordingData.name,
             uri = recordingData.uri,

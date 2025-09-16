@@ -17,6 +17,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.Locale
+import java.util.TimeZone
 
 class RecordingsViewModelTest {
 
@@ -26,6 +27,7 @@ class RecordingsViewModelTest {
     private lateinit var viewModel: RecordingsViewModel
     private val mapper = RecordingMapper(mockk {
         every { getCurrentLocale() } returns Locale.ENGLISH
+        every { getCurrentTimeZone() } returns TimeZone.getTimeZone("UTC")
     })
     val mockedUri = mockk<Uri>()
     private val testSearchData = listOf(

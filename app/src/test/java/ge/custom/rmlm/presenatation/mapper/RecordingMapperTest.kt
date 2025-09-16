@@ -6,15 +6,19 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.util.Locale
+import java.util.TimeZone
 
 class RecordingMapperTest {
 
     @Test
     fun `mapRecordingDataToRecordingUiData should map RecordingData to RecordingUiData`() =
         runTest {
-            val recordingMapper = RecordingMapper(mockk {
-                every { getCurrentLocale() } returns Locale.ENGLISH
-            })
+            val recordingMapper = RecordingMapper(
+                mockk {
+                    every { getCurrentLocale() } returns Locale.ENGLISH
+                    every { getCurrentTimeZone() } returns TimeZone.getTimeZone("UTC")
+                }
+            )
             val recordingData = RecordingData(
                 "test",
                 mockk(),
@@ -25,7 +29,8 @@ class RecordingMapperTest {
             assert(recordingUiData.name == recordingData.name)
             assert(recordingUiData.uri == recordingData.uri)
 
+            println(recordingUiData.date)
             assert(recordingUiData.duration == "00:01")
-            assert(recordingUiData.date == "07/30/2025 00:58:45")
+            assert(recordingUiData.date == "07/29/2025 20:58:45")
         }
 }
