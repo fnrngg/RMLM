@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "746797743307",
+    "project_id": "rmlm-13f18",
+    "storage_bucket": "rmlm-13f18.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:746797743307:android:198b8b83e9a69b1a552f4e",
+        "android_client_info": {
+          "package_name": "ge.custom.rmlm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBL7ahutI0ryzV4gKjX_f7rXhlcMkBFZ8w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

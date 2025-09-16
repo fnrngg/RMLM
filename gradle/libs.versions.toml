@@ -11,6 +11,8 @@ composeBom = "2025.07.00"
 koin_bom = "4.1.0"
 mockk = "1.14.5"
 coroutines = "1.10.2"
+firebase_services = "4.4.3"
+firebase_bom = "34.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +39,8 @@ koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-view
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
 mockk-core = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+firebase_bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase_bom" }
+firebase_analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -44,3 +48,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlin"  }
+firebase-services = { id = "com.google.gms.google-services",  version.ref = "firebase_services"  }
