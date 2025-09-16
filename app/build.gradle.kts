@@ -83,4 +83,7 @@ dependencies {
     testImplementation(libs.koin.test.junit4)
     testImplementation(libs.mockk.core)
     testImplementation(libs.kotlin.coroutines.test)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 }
